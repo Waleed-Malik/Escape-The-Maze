@@ -754,16 +754,18 @@ namespace qtools.qmaze
 			}
 			else
 			{
-				PrefabType type = PrefabUtility.GetPrefabType(prefab);
-				if (type == PrefabType.Prefab)
+				PrefabAssetType type = PrefabUtility.GetPrefabAssetType(prefab);
+
+				if (type == PrefabAssetType.Regular || type == PrefabAssetType.Variant)
 				{
 					go = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
 				}
 				else
 				{
-					go = (GameObject)GameObject.Instantiate(prefab, new Vector3(), Quaternion.AngleAxis(pieceData.rotation, Vector3.up));
+					go = Instantiate(prefab, Vector3.zero, Quaternion.AngleAxis(pieceData.rotation, Vector3.up));
 				}
-			}	
+			}
+			
 			#else
 				go = (GameObject)GameObject.Instantiate(prefab, new Vector3(), Quaternion.AngleAxis(-targetPiece.getRotation(), Vector3.up));
 			#endif
