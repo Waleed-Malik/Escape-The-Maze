@@ -14,28 +14,28 @@ namespace qtools.qmaze
 	/// Class contains functions to generate mazes
 	/// </summary>
 	[ExecuteInEditMode]
-	public class QMazeEngine : MonoBehaviour 
+	public class QMazeEngine : MonoBehaviour
 	{
-		[Serializable] public class QMazeGeneratedEvent 		: UnityEvent<QMazeEngine> {}
-		[Serializable] public class QMazePieceGeneratedEvent 	: UnityEvent<QMazePieceData> {}	
-		[Serializable] public class QMazeGenerateProgressEvent 	: UnityEvent<float> {}
+		[Serializable] public class QMazeGeneratedEvent : UnityEvent<QMazeEngine> { }
+		[Serializable] public class QMazePieceGeneratedEvent : UnityEvent<QMazePieceData> { }
+		[Serializable] public class QMazeGenerateProgressEvent : UnityEvent<float> { }
 
 		[SerializeField] private QMazePiecePack piecePack;
 
-		[SerializeField] private int mazeWidth = 25;
+		[SerializeField] private int mazeWidth = 50;
 		[SerializeField] private int mazeHeight = 25;
 
 		[SerializeField] private float mazePieceWidth = 10;
 		[SerializeField] private float mazePieceHeight = 10;
-		
+
 		[SerializeField] private float mazeScale = 1.0f;
 
 		[SerializeField] private bool startRandomPosition = false;
-		[SerializeField] private int  startRandomPositionCount = 0;
+		[SerializeField] private int startRandomPositionCount = 0;
 		[SerializeField] private List<QVector2IntDir> startPositionList = new List<QVector2IntDir>();
 
 		[SerializeField] private bool finishRandomPosition = false;
-		[SerializeField] private int  finishRandomPositionCount = 0;
+		[SerializeField] private int finishRandomPositionCount = 0;
 		[SerializeField] private List<QVector2IntDir> finishPositionList = new List<QVector2IntDir>();
 
 		[SerializeField] private List<QVector2IntDir> exitPositionList = new List<QVector2IntDir>();
@@ -46,9 +46,9 @@ namespace qtools.qmaze
 		[SerializeField] private bool onlyPath = false;
 
 		[SerializeField] private bool useSeed = false;
-		[SerializeField] private int seed = 0;	 
+		[SerializeField] private int seed = 0;
 
-		[SerializeField] private QMazePieceData[][] mazeArray;	
+		[SerializeField] private QMazePieceData[][] mazeArray;
 		[SerializeField] private bool inited = false;
 
 		/// <summary>
@@ -72,13 +72,13 @@ namespace qtools.qmaze
 		private List<QVector2Int> path;
 		private QMazeOutputDirection lastDirection;
 		private int startFinishLeft;
-		
-		private void Awake()		
+
+		private void Awake()
 		{
 			if (!inited)
 			{
 				inited = true;
-				
+
 				if (gameObject.GetComponent<QMazePiecePack>() == null)
 					piecePack = gameObject.AddComponent<QMazePiecePack>();
 			}
@@ -88,7 +88,7 @@ namespace qtools.qmaze
 		/// Get the maze piece pack
 		/// </summary>
 		/// <returns>The maze piece pack</returns>
-		public QMazePiecePack getMazePiecePack() 
+		public QMazePiecePack getMazePiecePack()
 		{
 			return piecePack;
 		}
@@ -106,7 +106,7 @@ namespace qtools.qmaze
 		/// Get the width of the maze
 		/// </summary>
 		/// <returns>Width of the maze</returns>
-		public int getMazeWidth() 
+		public int getMazeWidth()
 		{
 			return mazeWidth;
 		}
@@ -124,7 +124,7 @@ namespace qtools.qmaze
 		/// Get the height of the maze
 		/// </summary>
 		/// <returns>Height of the maze </returns>
-		public int getMazeHeight() 
+		public int getMazeHeight()
 		{
 			return mazeHeight;
 		}
@@ -142,7 +142,7 @@ namespace qtools.qmaze
 		/// Get the width of the maze piece
 		/// </summary>
 		/// <returns>Width of the maze piece  </returns>
-		public float getMazePieceWidth() 
+		public float getMazePieceWidth()
 		{
 			return mazePieceWidth;
 		}
@@ -160,7 +160,7 @@ namespace qtools.qmaze
 		/// Get the height of the maze piece
 		/// </summary>
 		/// <returns>Height of the maze piece </returns>
-		public float getMazePieceHeight() 
+		public float getMazePieceHeight()
 		{
 			return mazePieceHeight;
 		}
@@ -393,7 +393,7 @@ namespace qtools.qmaze
 		{
 			this.obstaclePositionList = obstaclePositionList;
 		}
-		
+
 		/// <summary>
 		/// Getting the flag of using the only path mode.
 		/// </summary>
@@ -449,7 +449,7 @@ namespace qtools.qmaze
 		{
 			this.seed = seed;
 		}
-        	
+
 		/// <summary>
 		/// Maze generation
 		/// </summary>
@@ -458,7 +458,7 @@ namespace qtools.qmaze
 		{
 			if (useSeed) QMath.setSeed(seed);
 			IEnumerator generationEnumerator = generate(generateWithGeometry, false);
-			while (generationEnumerator.MoveNext());
+			while (generationEnumerator.MoveNext()) ;
 		}
 
 		/// <summary>
@@ -468,9 +468,9 @@ namespace qtools.qmaze
 		/// <param name="maxTime">Maximum time of asynchronous generation step</param>
 		/// <param name="generateWithGeometry">If set to <c>true</c> geometry will also be generated</param>
 		public void generateMazeAsync(MonoBehaviour activeMonoBehaviour, float maxTime = 0.1f, bool generateWithGeometry = true)
-		{	
+		{
 			if (useSeed) QMath.setSeed(seed);
-			activeMonoBehaviour.StartCoroutine(generate(generateWithGeometry, true, maxTime));				 
+			activeMonoBehaviour.StartCoroutine(generate(generateWithGeometry, true, maxTime));
 		}
 
 		/// <summary>
@@ -489,10 +489,10 @@ namespace qtools.qmaze
 		/// Getting the current maze generation progress in asynchronous mode
 		/// </summary>
 		/// <returns>The progress of the generation</returns>
-	    public float getGenerationProgress()
-	    {
+		public float getGenerationProgress()
+		{
 			return (generationProgress + instantiatingProgress) / (2 * mazeWidth * mazeHeight);
-	    }
+		}
 
 		/// <summary>
 		/// Getting the data of the generated maze
@@ -517,33 +517,33 @@ namespace qtools.qmaze
 
 		private delegate int CheckTask(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir);
 		private const int CHECK_CONTINUE = 0;
-		private const int CHECK_BREAK    = 1;
-		private const int CHECK_FAILED   = 2;
+		private const int CHECK_BREAK = 1;
+		private const int CHECK_FAILED = 2;
 
 		private IEnumerator generate(bool generateWithGeometry = true, bool asynchronous = true, float maxTime = 0.1f)
 		{
 			generationProgress = 0;
 
-            startFinishLeft = 0;
+			startFinishLeft = 0;
 
-            if (startRandomPosition)
-            {
-                startPositionList.Clear();
-                generateRandomPoints(startPositionList, startRandomPositionCount);
-            }
-            startFinishLeft += startPositionList.Count;
+			if (startRandomPosition)
+			{
+				startPositionList.Clear();
+				generateRandomPoints(startPositionList, startRandomPositionCount);
+			}
+			startFinishLeft += startPositionList.Count;
 
-            if (finishRandomPosition)
-            {
-                finishPositionList.Clear();
-                generateRandomPoints(finishPositionList, finishRandomPositionCount);
-            }
-            startFinishLeft += finishPositionList.Count;
+			if (finishRandomPosition)
+			{
+				finishPositionList.Clear();
+				generateRandomPoints(finishPositionList, finishRandomPositionCount);
+			}
+			startFinishLeft += finishPositionList.Count;
 
 			QVector2Int startGenerationPoint = new QVector2Int(QMath.getRandom(0, mazeWidth), QMath.getRandom(0, mazeHeight));
-			while (QListUtil.has(startPositionList, startGenerationPoint) || 
-			       QListUtil.has(finishPositionList, startGenerationPoint) || 
-			       QListUtil.has(obstaclePositionList, startGenerationPoint))
+			while (QListUtil.has(startPositionList, startGenerationPoint) ||
+				   QListUtil.has(finishPositionList, startGenerationPoint) ||
+				   QListUtil.has(obstaclePositionList, startGenerationPoint))
 			{
 				startGenerationPoint.x = QMath.getRandom(0, mazeWidth);
 				startGenerationPoint.y = QMath.getRandom(0, mazeHeight);
@@ -551,7 +551,7 @@ namespace qtools.qmaze
 
 			path = new List<QVector2Int>();
 			mazeArray = new QMazePieceData[mazeWidth][];
-			for (int px = 0; px < mazeWidth; px++) 
+			for (int px = 0; px < mazeWidth; px++)
 			{
 				mazeArray[px] = new QMazePieceData[mazeHeight];
 				for (int py = 0; py < mazeHeight; py++)
@@ -559,43 +559,43 @@ namespace qtools.qmaze
 					mazeArray[px][py] = new QMazePieceData(px, py);
 				}
 			}
-			
+
 			lastDirection = QMazeOutputDirection.NotSpecified;
 			QVector2Int currentPosition = new QVector2Int(startGenerationPoint.x, startGenerationPoint.y);
-			
+
 			QMazeOutput output = new QMazeOutput();
 			mazeArray[currentPosition.x][currentPosition.y].outputs = new List<QMazeOutput>();
 			mazeArray[currentPosition.x][currentPosition.y].outputs.Add(output);
-			
+
 			path.Add(new QVector2Int(currentPosition.x, currentPosition.y));
 
 			checkTaskList.Clear();
-			if (startPositionList.Count  > 0) checkTaskList.Add(checkStartPoint);
-            if (finishPositionList.Count > 0) checkTaskList.Add(checkFinishPoint);
+			if (startPositionList.Count > 0) checkTaskList.Add(checkStartPoint);
+			if (finishPositionList.Count > 0) checkTaskList.Add(checkFinishPoint);
 			checkTaskList.Add(checkStandard);
-			if (piecePack.getPiece(QMazePieceType.Intersection		  ).use) checkTaskList.Add(checkUnder);
-			if (piecePack.getPiece(QMazePieceType.Crossing			  ).use && !onlyPath) checkTaskList.Add(checkCrossing);
-			if (piecePack.getPiece(QMazePieceType.Triple			  ).use && !onlyPath) checkTaskList.Add(checkTripple);
-			if (piecePack.getPiece(QMazePieceType.DoubleCorner		  ).use) checkTaskList.Add(checkDoubleCorner);
-			if (piecePack.getPiece(QMazePieceType.DeadlockCorner	  ).use) checkTaskList.Add(checkDeadlockCorner);
-			if (piecePack.getPiece(QMazePieceType.DeadlockLine	      ).use) checkTaskList.Add(checkDeadlockLine);
-			if (piecePack.getPiece(QMazePieceType.DeadlockTriple	  ).use) checkTaskList.Add(checkDeadlockTriple);
-			if (piecePack.getPiece(QMazePieceType.DeadlockCrossing	  ).use) checkTaskList.Add(checkDeadlockCrossing);
-			if (piecePack.getPiece(QMazePieceType.TripleDeadlock	  ).use) checkTaskList.Add(checkTripleDeadlock);
-			if (piecePack.getPiece(QMazePieceType.LineDeadlock		  ).use) checkTaskList.Add(checkLineDeadlock);
-			if (piecePack.getPiece(QMazePieceType.LineDeadlockLine	  ).use) checkTaskList.Add(checkLineDeadlockLine);
-			if (piecePack.getPiece(QMazePieceType.CornerDeadlockLeft	  ).use) checkTaskList.Add(checkCornerDeadlock1);
-			if (piecePack.getPiece(QMazePieceType.CornerDeadlockRight	  ).use) checkTaskList.Add(checkCornerDeadlock2);
+			if (piecePack.getPiece(QMazePieceType.Intersection).use) checkTaskList.Add(checkUnder);
+			if (piecePack.getPiece(QMazePieceType.Crossing).use && !onlyPath) checkTaskList.Add(checkCrossing);
+			if (piecePack.getPiece(QMazePieceType.Triple).use && !onlyPath) checkTaskList.Add(checkTripple);
+			if (piecePack.getPiece(QMazePieceType.DoubleCorner).use) checkTaskList.Add(checkDoubleCorner);
+			if (piecePack.getPiece(QMazePieceType.DeadlockCorner).use) checkTaskList.Add(checkDeadlockCorner);
+			if (piecePack.getPiece(QMazePieceType.DeadlockLine).use) checkTaskList.Add(checkDeadlockLine);
+			if (piecePack.getPiece(QMazePieceType.DeadlockTriple).use) checkTaskList.Add(checkDeadlockTriple);
+			if (piecePack.getPiece(QMazePieceType.DeadlockCrossing).use) checkTaskList.Add(checkDeadlockCrossing);
+			if (piecePack.getPiece(QMazePieceType.TripleDeadlock).use) checkTaskList.Add(checkTripleDeadlock);
+			if (piecePack.getPiece(QMazePieceType.LineDeadlock).use) checkTaskList.Add(checkLineDeadlock);
+			if (piecePack.getPiece(QMazePieceType.LineDeadlockLine).use) checkTaskList.Add(checkLineDeadlockLine);
+			if (piecePack.getPiece(QMazePieceType.CornerDeadlockLeft).use) checkTaskList.Add(checkCornerDeadlock1);
+			if (piecePack.getPiece(QMazePieceType.CornerDeadlockRight).use) checkTaskList.Add(checkCornerDeadlock2);
 			if (piecePack.getPiece(QMazePieceType.CornerDeadlockCorner).use) checkTaskList.Add(checkCornerDeadlockCorner);
-			if (piecePack.getPiece(QMazePieceType.None				  ).use) checkTaskList.Add(checkNone);
+			if (piecePack.getPiece(QMazePieceType.None).use) checkTaskList.Add(checkNone);
 
 			float time = Time.realtimeSinceStartup;
 
 			do
 			{
 				int lastPathIndex = path.Count - 1;
-				currentPosition.set(path[lastPathIndex].x, path[lastPathIndex].y);             
-				
+				currentPosition.set(path[lastPathIndex].x, path[lastPathIndex].y);
+
 				lastDirection = QMazeOutputDirection.NotSpecified;
 				QMazeOutput outputArray = QMazeOutput.getShuffleOutput();
 
@@ -611,7 +611,7 @@ namespace qtools.qmaze
 							int checkResult = 0;
 							for (int i = 0; i < checkTaskList.Count; i++)
 							{
-	                            CheckTask checkTask = checkTaskList[i];
+								CheckTask checkTask = checkTaskList[i];
 								checkResult = checkTask(currentPosition, newPosition, newPositionOutputs, dir);
 								if (checkResult != CHECK_FAILED) break;
 							}
@@ -624,7 +624,7 @@ namespace qtools.qmaze
 							}
 
 							if (checkResult == CHECK_CONTINUE) continue;
-							if (checkResult == CHECK_BREAK) 
+							if (checkResult == CHECK_BREAK)
 							{
 								generationProgress++;
 								break;
@@ -632,9 +632,9 @@ namespace qtools.qmaze
 						}
 					}
 				}
-				
-				if (lastDirection == QMazeOutputDirection.NotSpecified)            
-					path.RemoveAt(path.Count - 1);   
+
+				if (lastDirection == QMazeOutputDirection.NotSpecified)
+					path.RemoveAt(path.Count - 1);
 
 				if (asynchronous && Time.realtimeSinceStartup - time > maxTime)
 				{
@@ -642,16 +642,16 @@ namespace qtools.qmaze
 					yield return null;
 					if (mazeGenerateProgressEvent != null)
 						mazeGenerateProgressEvent.Invoke(getGenerationProgress());
-				} 
+				}
 			}
-			while (path.Count > 0);		
+			while (path.Count > 0);
 
 			List<QMazePiece> pieces = piecePack.getMazePieceList();
 			for (int i = 0; i < pieces.Count; i++)
 			{
-				if ((!pieces[i].use && !pieces[i].isRequire()) || 
-				    pieces[i].getType() == QMazePieceType.Start || 
-				    pieces[i].getType() == QMazePieceType.Finish)
+				if ((!pieces[i].use && !pieces[i].isRequire()) ||
+					pieces[i].getType() == QMazePieceType.Start ||
+					pieces[i].getType() == QMazePieceType.Finish)
 				{
 					pieces.RemoveAt(i);
 					i--;
@@ -663,14 +663,14 @@ namespace qtools.qmaze
 			bool wasError = false;
 			float mazeSize = mazeWidth * mazeHeight;
 
-			for (int ix = 0; ix < mazeWidth; ix++) 
-			{          
-				for (int iy = 0; iy < mazeHeight; iy++) 
+			for (int ix = 0; ix < mazeWidth; ix++)
+			{
+				for (int iy = 0; iy < mazeHeight; iy++)
 				{
 					QMazePieceData mazePieceData = mazeArray[ix][iy];
-					
+
 					QMazePiece targetPiece = null;
-					
+
 					if (QListUtil.has(startPositionList, ix, iy) && mazePieceData.outputs != null && piecePack.getPiece(QMazePieceType.Start).checkFit(mazePieceData.outputs))
 					{
 						targetPiece = piecePack.getPiece(QMazePieceType.Start);
@@ -689,9 +689,9 @@ namespace qtools.qmaze
 								targetPiece = pieces[i];
 								break;
 							}
-						} 
+						}
 					}
-					
+
 					if (targetPiece == null)
 					{
 						if (pointInMaze(new QVector2Int(ix, iy)) || obstacleIsNone)
@@ -710,7 +710,7 @@ namespace qtools.qmaze
 							if (!wasError)
 							{
 								wasError = true;
-								Debug.LogWarning("QMaze: Geometry for " + targetPiece.getType() + " piece is not found. Please check that geometry is specified for it in the piece pack.");		
+								Debug.LogWarning("QMaze: Geometry for " + targetPiece.getType() + " piece is not found. Please check that geometry is specified for it in the piece pack.");
 							}
 						}
 						continue;
@@ -719,14 +719,14 @@ namespace qtools.qmaze
 					mazePieceData.type = targetPiece.getType();
 					mazePieceData.rotation = -targetPiece.getRotation();
 
-					if (generateWithGeometry) generateGeometry(mazePieceData);	
+					if (generateWithGeometry) generateGeometry(mazePieceData);
 
 					count++;
 					instantiatingProgress = count / mazeSize;
 
 					if (mazePieceGeneratedEvent != null)
-						mazePieceGeneratedEvent.Invoke(mazePieceData);						
-					
+						mazePieceGeneratedEvent.Invoke(mazePieceData);
+
 					if (Time.realtimeSinceStartup - time > maxTime)
 					{
 						time = Time.realtimeSinceStartup;
@@ -744,10 +744,10 @@ namespace qtools.qmaze
 		private void generateGeometry(QMazePieceData pieceData)
 		{
 			QMazePiece targetPiece = piecePack.getPiece(pieceData.type);
-			
+
 			GameObject prefab = targetPiece.geometryList[QMath.getRandom(0, targetPiece.geometryList.Count)];
 			GameObject go;
-			#if UNITY_EDITOR
+#if UNITY_EDITOR
 			if (Application.isPlaying)
 			{
 				go = (GameObject)GameObject.Instantiate(prefab, new Vector3(), Quaternion.AngleAxis(pieceData.rotation, Vector3.up));
@@ -764,36 +764,36 @@ namespace qtools.qmaze
 					go = (GameObject)GameObject.Instantiate(prefab, new Vector3(), Quaternion.AngleAxis(pieceData.rotation, Vector3.up));
 				}
 			}	
-			#else
-				go = (GameObject)GameObject.Instantiate(prefab, new Vector3(), Quaternion.AngleAxis(-targetPiece.getRotation(), Vector3.up));
-			#endif
+#else
+			go = (GameObject)GameObject.Instantiate(prefab, new Vector3(), Quaternion.AngleAxis(-targetPiece.getRotation(), Vector3.up));
+#endif
 			go.transform.parent = transform;
 			go.transform.localPosition = new Vector3(pieceData.x * mazePieceWidth * mazeScale, 0, -pieceData.y * mazePieceHeight * mazeScale);
 			go.transform.rotation = transform.rotation * Quaternion.AngleAxis(pieceData.rotation, Vector3.up);
-			
+
 			Vector3 scale = go.transform.localScale;
 			go.transform.localScale = scale * mazeScale;
-			
+
 			pieceData.geometry = go;
 		}
-		
-        private void generateRandomPoints(List<QVector2IntDir> pointList, int randomCount)
-        {
-            for (int i = 0; i < randomCount; i++)
-            {
-                QVector2IntDir newPoint = new QVector2IntDir(QMath.getRandom(0, mazeWidth), QMath.getRandom(0, mazeHeight), QMazeOutputDirection.NotSpecified);
-                while (!pointInMaze(newPoint) || QListUtil.has(startPositionList, newPoint) || QListUtil.has(finishPositionList, newPoint) || QListUtil.has(exitPositionList, newPoint))
-                {
-                    newPoint.x = QMath.getRandom(0, mazeWidth);
-                    newPoint.y = QMath.getRandom(0, mazeHeight);
-                }               
-                pointList.Add(newPoint);
-            }
-        }
+
+		private void generateRandomPoints(List<QVector2IntDir> pointList, int randomCount)
+		{
+			for (int i = 0; i < randomCount; i++)
+			{
+				QVector2IntDir newPoint = new QVector2IntDir(QMath.getRandom(0, mazeWidth), QMath.getRandom(0, mazeHeight), QMazeOutputDirection.NotSpecified);
+				while (!pointInMaze(newPoint) || QListUtil.has(startPositionList, newPoint) || QListUtil.has(finishPositionList, newPoint) || QListUtil.has(exitPositionList, newPoint))
+				{
+					newPoint.x = QMath.getRandom(0, mazeWidth);
+					newPoint.y = QMath.getRandom(0, mazeHeight);
+				}
+				pointList.Add(newPoint);
+			}
+		}
 
 		private int checkStartPoint(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QListUtil.has(startPositionList, newPosition)) 
+			if (QListUtil.has(startPositionList, newPosition))
 			{
 				if (mazeArray[newPosition.x][newPosition.y].outputs == null)
 				{
@@ -802,7 +802,7 @@ namespace qtools.qmaze
 					{
 						QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 						output.outputDirList.Add(dir);
-						
+
 						output = new QMazeOutput();
 						output.outputDirList.Add(QMazeOutput.opposite[dir]);
 						mazeArray[newPosition.x][newPosition.y].outputs = new List<QMazeOutput>();
@@ -819,53 +819,53 @@ namespace qtools.qmaze
 				}
 				return CHECK_CONTINUE;
 			}
-			else if (QListUtil.has(startPositionList, currentPosition)) 
+			else if (QListUtil.has(startPositionList, currentPosition))
 			{
 				QVector2IntDir startPoint = QListUtil.get(startPositionList, new QVector2IntDir(currentPosition.x, currentPosition.y, QMazeOutput.opposite[dir]));
 				if (startPoint != null && startPoint.direction == QMazeOutputDirection.NotSpecified)
-				    startPoint.direction = QMazeOutput.opposite[dir];				
+					startPoint.direction = QMazeOutput.opposite[dir];
 				return CHECK_BREAK;
 			}
 			return CHECK_FAILED;
 		}
 
-        private int checkFinishPoint(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
-        {
-            if (QListUtil.has(finishPositionList, newPosition)) 
-            {
-                if (mazeArray[newPosition.x][newPosition.y].outputs == null)
-                {
-                    QVector2IntDir finishPoint = QListUtil.get(finishPositionList, new QVector2IntDir(newPosition.x, newPosition.y, QMazeOutput.opposite[dir]));
-                    if (finishPoint != null)
-                    {
-                        QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
-                        output.outputDirList.Add(dir);
-                        
-                        output = new QMazeOutput();
-                        output.outputDirList.Add(QMazeOutput.opposite[dir]);
-                        mazeArray[newPosition.x][newPosition.y].outputs = new List<QMazeOutput>();
-                        mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-                        
-                        if (finishPoint.direction == QMazeOutputDirection.NotSpecified)
-                            finishPoint.direction = QMazeOutput.opposite[dir];
-                        startFinishLeft--;
-                    }
-                    else
-                    {
-                        return CHECK_CONTINUE;
-                    }
-                }
-                return CHECK_CONTINUE;
-            }
-            else if (QListUtil.has(finishPositionList, currentPosition)) 
-            {
-                QVector2IntDir finishPoint = QListUtil.get(finishPositionList, new QVector2IntDir(currentPosition.x, currentPosition.y, QMazeOutput.opposite[dir]));
-                if (finishPoint != null && finishPoint.direction == QMazeOutputDirection.NotSpecified)
-                    finishPoint.direction = QMazeOutput.opposite[dir];                
-                return CHECK_BREAK;
-            }
-            return CHECK_FAILED;
-        }
+		private int checkFinishPoint(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
+		{
+			if (QListUtil.has(finishPositionList, newPosition))
+			{
+				if (mazeArray[newPosition.x][newPosition.y].outputs == null)
+				{
+					QVector2IntDir finishPoint = QListUtil.get(finishPositionList, new QVector2IntDir(newPosition.x, newPosition.y, QMazeOutput.opposite[dir]));
+					if (finishPoint != null)
+					{
+						QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
+						output.outputDirList.Add(dir);
+
+						output = new QMazeOutput();
+						output.outputDirList.Add(QMazeOutput.opposite[dir]);
+						mazeArray[newPosition.x][newPosition.y].outputs = new List<QMazeOutput>();
+						mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
+
+						if (finishPoint.direction == QMazeOutputDirection.NotSpecified)
+							finishPoint.direction = QMazeOutput.opposite[dir];
+						startFinishLeft--;
+					}
+					else
+					{
+						return CHECK_CONTINUE;
+					}
+				}
+				return CHECK_CONTINUE;
+			}
+			else if (QListUtil.has(finishPositionList, currentPosition))
+			{
+				QVector2IntDir finishPoint = QListUtil.get(finishPositionList, new QVector2IntDir(currentPosition.x, currentPosition.y, QMazeOutput.opposite[dir]));
+				if (finishPoint != null && finishPoint.direction == QMazeOutputDirection.NotSpecified)
+					finishPoint.direction = QMazeOutput.opposite[dir];
+				return CHECK_BREAK;
+			}
+			return CHECK_FAILED;
+		}
 
 		private int checkStandard(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
@@ -873,12 +873,12 @@ namespace qtools.qmaze
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs = new List<QMazeOutput>();
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
+
 				path.Add(new QVector2Int(newPosition.x, newPosition.y));
 				lastDirection = dir;
 
@@ -890,7 +890,7 @@ namespace qtools.qmaze
 				for (int i = 0; i < mazeArray[currentPosition.x][currentPosition.y].outputs.Count; i++)
 				{
 					QMazeOutput mazeOutput = mazeArray[currentPosition.x][currentPosition.y].outputs[i];
-					
+
 					for (int k = 0; k < mazeOutput.outputDirList.Count; k++)
 					{
 						if (mazeOutput.outputDirList[k] == dir)
@@ -922,76 +922,76 @@ namespace qtools.qmaze
 		}
 
 		private int checkUnder(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
-	    {
+		{
 			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.Intersection).frequency &&
-			    newPositionOutputs != null && 
-			    newPositionOutputs.Count == 1 && 
-			    newPositionOutputs[0].outputDirList.Count == 2 &&
-			    !newPositionOutputs[0].outputDirList.Contains(dir) && 
-			    !newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
+				newPositionOutputs != null &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 2 &&
+				!newPositionOutputs[0].outputDirList.Contains(dir) &&
+				!newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
 			{
 				QVector2Int newPosition2 = newPosition.clone();
 				newPosition2.x += QMazeOutput.dx[dir];
 				newPosition2.y += QMazeOutput.dy[dir];
 
-				if (pointInMaze(newPosition2) && 
-				    mazeArray[newPosition2.x][newPosition2.y].outputs == null &&
-				    !QListUtil.has(startPositionList, newPosition2) && 
-				    !QListUtil.has(finishPositionList, newPosition2)) 
-	            {
+				if (pointInMaze(newPosition2) &&
+					mazeArray[newPosition2.x][newPosition2.y].outputs == null &&
+					!QListUtil.has(startPositionList, newPosition2) &&
+					!QListUtil.has(finishPositionList, newPosition2))
+				{
 					QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 					output.outputDirList.Add(dir);
-					
+
 					output = new QMazeOutput();
 					output.outputDirList.Add(dir);
 					output.outputDirList.Add(QMazeOutput.opposite[dir]);
-					mazeArray[newPosition.x][newPosition.y].outputs.Add(output);							
-					
+					mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
+
 					output = new QMazeOutput();
 					output.outputDirList.Add(QMazeOutput.opposite[dir]);
 					mazeArray[newPosition2.x][newPosition2.y].outputs = new List<QMazeOutput>();
 					mazeArray[newPosition2.x][newPosition2.y].outputs.Add(output);
-					
+
 					path.Add(new QVector2Int(newPosition2.x, newPosition2.y));
 					lastDirection = dir;
-					
+
 					return CHECK_BREAK;
-	            }		        
+				}
 			}
 			return CHECK_FAILED;
-	    }
+		}
 
 		private int checkCrossing(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.Crossing).frequency && 
-			    newPositionOutputs != null && 
-			    newPositionOutputs.Count == 1 && 
-			    newPositionOutputs[0].outputDirList.Count == 2 &&
-			    !newPositionOutputs[0].outputDirList.Contains(dir) && 
-			    !newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.Crossing).frequency &&
+				newPositionOutputs != null &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 2 &&
+				!newPositionOutputs[0].outputDirList.Contains(dir) &&
+				!newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
 			{
 				QVector2Int newPosition2 = newPosition.clone();
 				newPosition2.x += QMazeOutput.dx[dir];
 				newPosition2.y += QMazeOutput.dy[dir];
 
-				if (pointInMaze(newPosition2) && 
-				    mazeArray[newPosition2.x][newPosition2.y].outputs == null)
+				if (pointInMaze(newPosition2) &&
+					mazeArray[newPosition2.x][newPosition2.y].outputs == null)
 				{
 					QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 					output.outputDirList.Add(dir);
 
 					mazeArray[newPosition.x][newPosition.y].outputs[0].outputDirList.Add(dir);
 					mazeArray[newPosition.x][newPosition.y].outputs[0].outputDirList.Add(QMazeOutput.opposite[dir]);
-					
+
 					output = new QMazeOutput();
 					output.outputDirList.Add(QMazeOutput.opposite[dir]);
 					mazeArray[newPosition2.x][newPosition2.y].outputs = new List<QMazeOutput>();
 					mazeArray[newPosition2.x][newPosition2.y].outputs.Add(output);
-					
+
 					path.Add(new QVector2Int(newPosition2.x, newPosition2.y));
 					lastDirection = dir;
-					
-					return CHECK_BREAK;					
+
+					return CHECK_BREAK;
 				}
 			}
 			return CHECK_FAILED;
@@ -999,11 +999,11 @@ namespace qtools.qmaze
 
 		private int checkTripple(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.Triple).frequency && 
-			    newPositionOutputs.Count == 1 && 
-			    newPositionOutputs[0].outputDirList.Count == 2 && 
-			    newPositionOutputs[0].outputDirList.Contains(dir) && 
-			    !newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.Triple).frequency &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 2 &&
+				newPositionOutputs[0].outputDirList.Contains(dir) &&
+				!newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
@@ -1016,35 +1016,35 @@ namespace qtools.qmaze
 		}
 
 		private int checkDoubleCorner(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
-	    {
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.DoubleCorner).frequency && 
-			    newPositionOutputs.Count == 1 && 
-			    newPositionOutputs[0].outputDirList.Count == 2 && 
-			    newPositionOutputs[0].outputDirList.Contains(dir) && 
-			    !newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
-	        {
-	            QVector2Int newPos1 = new QVector2Int(newPosition.x + QMazeOutput.dx[QMazeOutput.rotateCW[dir]],
-	                                                  newPosition.y + QMazeOutput.dy[QMazeOutput.rotateCW[dir]]);
-	            QVector2Int newPos2 = new QVector2Int(newPosition.x + QMazeOutput.dx[QMazeOutput.rotateCCW[dir]],
-	                                                  newPosition.y + QMazeOutput.dy[QMazeOutput.rotateCCW[dir]]);
+		{
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.DoubleCorner).frequency &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 2 &&
+				newPositionOutputs[0].outputDirList.Contains(dir) &&
+				!newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
+			{
+				QVector2Int newPos1 = new QVector2Int(newPosition.x + QMazeOutput.dx[QMazeOutput.rotateCW[dir]],
+													  newPosition.y + QMazeOutput.dy[QMazeOutput.rotateCW[dir]]);
+				QVector2Int newPos2 = new QVector2Int(newPosition.x + QMazeOutput.dx[QMazeOutput.rotateCCW[dir]],
+													  newPosition.y + QMazeOutput.dy[QMazeOutput.rotateCCW[dir]]);
 
-				if ((pointInMaze(newPos1) && 
-				     mazeArray[newPos1.x][newPos1.y].outputs == null && 
-				     newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCCW[dir]) && 
-				     !QListUtil.has(startPositionList, newPos1) && 
-				     !QListUtil.has(finishPositionList, newPos1)) 
-				    ||
-				    (pointInMaze(newPos2) && 
-				 	mazeArray[newPos2.x][newPos2.y].outputs == null && 
-				 	newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCW [dir]) &&
-				    !QListUtil.has(startPositionList, newPos2) && 
-				    !QListUtil.has(finishPositionList, newPos2)))
-	            {
+				if ((pointInMaze(newPos1) &&
+					 mazeArray[newPos1.x][newPos1.y].outputs == null &&
+					 newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCCW[dir]) &&
+					 !QListUtil.has(startPositionList, newPos1) &&
+					 !QListUtil.has(finishPositionList, newPos1))
+					||
+					(pointInMaze(newPos2) &&
+					 mazeArray[newPos2.x][newPos2.y].outputs == null &&
+					 newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCW[dir]) &&
+					!QListUtil.has(startPositionList, newPos2) &&
+					!QListUtil.has(finishPositionList, newPos2)))
+				{
 					QMazeOutputDirection dir2 = dir;
-					
+
 					QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 					output.outputDirList.Add(dir);
-					
+
 					output = new QMazeOutput();
 					output.outputDirList.Add(QMazeOutput.opposite[dir]);
 					if (!mazeArray[newPosition.x][newPosition.y].outputs[0].outputDirList.Contains(QMazeOutput.rotateCW[dir]))
@@ -1052,45 +1052,45 @@ namespace qtools.qmaze
 						output.outputDirList.Add(QMazeOutput.rotateCW[dir]);
 						dir2 = QMazeOutput.rotateCW[dir];
 					}
-					else 
+					else
 					{
 						output.outputDirList.Add(QMazeOutput.rotateCCW[dir]);
 						dir2 = QMazeOutput.rotateCCW[dir];
 					}
 					mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-					
+
 					newPosition.x += QMazeOutput.dx[dir2];
 					newPosition.y += QMazeOutput.dy[dir2];
-					
+
 					output = new QMazeOutput();
 					output.outputDirList.Add(QMazeOutput.opposite[dir2]);
 					mazeArray[newPosition.x][newPosition.y].outputs = new List<QMazeOutput>();
 					mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-					
+
 					path.Add(new QVector2Int(newPosition.x, newPosition.y));
 					lastDirection = dir2;
-					
+
 					return CHECK_BREAK;
-	            }
-	        }
+				}
+			}
 			return CHECK_FAILED;
-	    }
+		}
 
 		private int checkDeadlockCorner(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
-		{		
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.DeadlockCorner).frequency && 
-			    newPositionOutputs != null && 
-			    newPositionOutputs.Count == 1 && 
-			    newPositionOutputs[0].outputDirList.Count == 1 &&
-			    (newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCW[dir]) || newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCCW[dir])))
+		{
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.DeadlockCorner).frequency &&
+				newPositionOutputs != null &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 1 &&
+				(newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCW[dir]) || newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCCW[dir])))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
+
 				return CHECK_CONTINUE;
 			}
 			return CHECK_FAILED;
@@ -1098,19 +1098,19 @@ namespace qtools.qmaze
 
 		private int checkDeadlockLine(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.DeadlockLine).frequency && 
-			    newPositionOutputs != null && 
-			    newPositionOutputs.Count == 1 &&
-			    newPositionOutputs[0].outputDirList.Count == 1 && 
-			    newPositionOutputs[0].outputDirList.Contains(dir))
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.DeadlockLine).frequency &&
+				newPositionOutputs != null &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Contains(dir))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
+
 				return CHECK_CONTINUE;
 			}
 			return CHECK_FAILED;
@@ -1118,21 +1118,21 @@ namespace qtools.qmaze
 
 		private int checkDeadlockTriple(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.DeadlockTriple).frequency && 
-			    newPositionOutputs != null && 
-			    newPositionOutputs.Count == 2 &&
-			    newPositionOutputs[0].outputDirList.Count == 1 && 
-			    !newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
-			    newPositionOutputs[1].outputDirList.Count == 1 &&
-			    !newPositionOutputs[1].outputDirList.Contains(QMazeOutput.opposite[dir]))
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.DeadlockTriple).frequency &&
+				newPositionOutputs != null &&
+				newPositionOutputs.Count == 2 &&
+				newPositionOutputs[0].outputDirList.Count == 1 &&
+				!newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
+				newPositionOutputs[1].outputDirList.Count == 1 &&
+				!newPositionOutputs[1].outputDirList.Contains(QMazeOutput.opposite[dir]))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
+
 				return CHECK_CONTINUE;
 			}
 			return CHECK_FAILED;
@@ -1140,23 +1140,23 @@ namespace qtools.qmaze
 
 		private int checkDeadlockCrossing(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.DeadlockCrossing).frequency && 
-			    newPositionOutputs != null && 
-			    newPositionOutputs.Count == 3 &&
-			    newPositionOutputs[0].outputDirList.Count == 1 && 
-			    !newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
-			    newPositionOutputs[1].outputDirList.Count == 1 && 
-			    !newPositionOutputs[1].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
-			    newPositionOutputs[2].outputDirList.Count == 1 &&
-			    !newPositionOutputs[2].outputDirList.Contains(QMazeOutput.opposite[dir]))
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.DeadlockCrossing).frequency &&
+				newPositionOutputs != null &&
+				newPositionOutputs.Count == 3 &&
+				newPositionOutputs[0].outputDirList.Count == 1 &&
+				!newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
+				newPositionOutputs[1].outputDirList.Count == 1 &&
+				!newPositionOutputs[1].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
+				newPositionOutputs[2].outputDirList.Count == 1 &&
+				!newPositionOutputs[2].outputDirList.Contains(QMazeOutput.opposite[dir]))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
+
 				return CHECK_CONTINUE;
 			}
 			return CHECK_FAILED;
@@ -1164,19 +1164,19 @@ namespace qtools.qmaze
 
 		private int checkTripleDeadlock(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.TripleDeadlock).frequency && 
-			    newPositionOutputs != null && 
-			    newPositionOutputs.Count == 1 &&
-			    newPositionOutputs[0].outputDirList.Count == 3 && 
-			    !newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.TripleDeadlock).frequency &&
+				newPositionOutputs != null &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 3 &&
+				!newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
+
 				return CHECK_CONTINUE;
 			}
 			return CHECK_FAILED;
@@ -1184,20 +1184,20 @@ namespace qtools.qmaze
 
 		private int checkLineDeadlock(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.LineDeadlock).frequency && 
-			    newPositionOutputs != null && 
-			    newPositionOutputs.Count == 1 &&
-			    newPositionOutputs[0].outputDirList.Count == 2 && 
-			    !newPositionOutputs[0].outputDirList.Contains(dir) && 
-			    !newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.LineDeadlock).frequency &&
+				newPositionOutputs != null &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 2 &&
+				!newPositionOutputs[0].outputDirList.Contains(dir) &&
+				!newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
+
 				return CHECK_CONTINUE;
 			}
 			return CHECK_FAILED;
@@ -1205,84 +1205,84 @@ namespace qtools.qmaze
 
 		private int checkLineDeadlockLine(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.LineDeadlockLine).frequency && 
-			    newPositionOutputs != null && 
-			    newPositionOutputs.Count == 2 && 
-			    !newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
-				!newPositionOutputs[1].outputDirList.Contains(QMazeOutput.opposite[dir]) && 
-				((newPositionOutputs[0].outputDirList.Count == 2 && newPositionOutputs[1].outputDirList.Count == 1 && newPositionOutputs[0].outputDirList[0] == QMazeOutput.opposite[newPositionOutputs[0].outputDirList[1]]) || 
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.LineDeadlockLine).frequency &&
+				newPositionOutputs != null &&
+				newPositionOutputs.Count == 2 &&
+				!newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
+				!newPositionOutputs[1].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
+				((newPositionOutputs[0].outputDirList.Count == 2 && newPositionOutputs[1].outputDirList.Count == 1 && newPositionOutputs[0].outputDirList[0] == QMazeOutput.opposite[newPositionOutputs[0].outputDirList[1]]) ||
 				 (newPositionOutputs[0].outputDirList.Count == 1 && newPositionOutputs[1].outputDirList.Count == 2 && newPositionOutputs[1].outputDirList[0] == QMazeOutput.opposite[newPositionOutputs[1].outputDirList[1]])))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
-				return CHECK_CONTINUE;											
+
+				return CHECK_CONTINUE;
 			}
 			return CHECK_FAILED;
 		}
 
 		private int checkCornerDeadlock1(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.CornerDeadlockLeft).frequency && 
-			    newPositionOutputs != null && 
-			    newPositionOutputs.Count == 1 &&
-			    newPositionOutputs[0].outputDirList.Count == 2 && 
-			    newPositionOutputs[0].outputDirList.Contains(dir) && 
-			    newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCW[dir]))
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.CornerDeadlockLeft).frequency &&
+				newPositionOutputs != null &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 2 &&
+				newPositionOutputs[0].outputDirList.Contains(dir) &&
+				newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCW[dir]))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
-				return CHECK_CONTINUE;						
+
+				return CHECK_CONTINUE;
 			}
 			return CHECK_FAILED;
 		}
 
 		private int checkCornerDeadlock2(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.CornerDeadlockRight).frequency && 
-			    newPositionOutputs.Count == 1 &&
-			    newPositionOutputs[0].outputDirList.Count == 2 && 
-			    newPositionOutputs[0].outputDirList.Contains(dir) && 
-			    newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCCW[dir]))
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.CornerDeadlockRight).frequency &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 2 &&
+				newPositionOutputs[0].outputDirList.Contains(dir) &&
+				newPositionOutputs[0].outputDirList.Contains(QMazeOutput.rotateCCW[dir]))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
-				return CHECK_CONTINUE;			
+
+				return CHECK_CONTINUE;
 			}
 			return CHECK_FAILED;
 		}
 
 		private int checkCornerDeadlockCorner(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
-			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.CornerDeadlockCorner).frequency && 
-			    newPositionOutputs.Count == 2 && 
-			    !newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]) && 
+			if (QMath.getRandom() < piecePack.getPiece(QMazePieceType.CornerDeadlockCorner).frequency &&
+				newPositionOutputs.Count == 2 &&
+				!newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
 				!newPositionOutputs[1].outputDirList.Contains(QMazeOutput.opposite[dir]) &&
 				((newPositionOutputs[0].outputDirList.Count == 2 && newPositionOutputs[1].outputDirList.Count == 1 && newPositionOutputs[0].outputDirList[0] != QMazeOutput.opposite[newPositionOutputs[0].outputDirList[1]]) ||
 				 (newPositionOutputs[0].outputDirList.Count == 1 && newPositionOutputs[1].outputDirList.Count == 2 && newPositionOutputs[1].outputDirList[0] != QMazeOutput.opposite[newPositionOutputs[1].outputDirList[1]])))
 			{
 				QMazeOutput output = mazeArray[currentPosition.x][currentPosition.y].outputs[mazeArray[currentPosition.x][currentPosition.y].outputs.Count - 1];
 				output.outputDirList.Add(dir);
-				
+
 				output = new QMazeOutput();
 				output.outputDirList.Add(QMazeOutput.opposite[dir]);
 				mazeArray[newPosition.x][newPosition.y].outputs.Add(output);
-				
-				return CHECK_CONTINUE;											
+
+				return CHECK_CONTINUE;
 			}
 			return CHECK_FAILED;
 		}
@@ -1290,10 +1290,10 @@ namespace qtools.qmaze
 		private int checkNone(QVector2Int currentPosition, QVector2Int newPosition, List<QMazeOutput> newPositionOutputs, QMazeOutputDirection dir)
 		{
 			if (startFinishLeft == 0 &&
-				QMath.getRandom() < piecePack.getPiece(QMazePieceType.None).frequency && 
-			    newPositionOutputs.Count == 1 && 
-			    newPositionOutputs[0].outputDirList.Count == 1 && 
-			    newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
+				QMath.getRandom() < piecePack.getPiece(QMazePieceType.None).frequency &&
+				newPositionOutputs.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Count == 1 &&
+				newPositionOutputs[0].outputDirList.Contains(QMazeOutput.opposite[dir]))
 			{
 				newPositionOutputs.Clear();
 				newPositionOutputs.Add(new QMazeOutput());
