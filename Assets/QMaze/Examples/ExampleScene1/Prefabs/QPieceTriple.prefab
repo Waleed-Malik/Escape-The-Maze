@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3319842}
   - component: {fileID: 2392754}
   - component: {fileID: 6499600}
+  - component: {fileID: -7370341470096584680}
   m_Layer: 0
   m_Name: QPieceTriple
   m_TagString: Untagged
@@ -109,3 +110,24 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300090, guid: 1d985f0f1ced2434095d68189071726b, type: 3}
+--- !u!114 &-7370341470096584680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 174384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9115eff3b9ce64e45a0080f1cf51eb7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  knightPrefab: {fileID: 7730201367660157384, guid: 554dba63f7c641ea9aedde47b6f03cf3, type: 3}
+  swordPrefab: {fileID: 0}
+  shieldPrefab: {fileID: 0}
+  knightRotation: {x: 0, y: 0, z: 0}
+  knightScale: {x: 0.5, y: 0.5, z: 0.5}
+  swordRotation: {x: 0, y: 0, z: 0}
+  swordScale: {x: 0.3, y: 0.3, z: 0.3}
+  shieldRotation: {x: 0, y: 0, z: 0}
+  shieldScale: {x: 0.5, y: 0.5, z: 0.5}
