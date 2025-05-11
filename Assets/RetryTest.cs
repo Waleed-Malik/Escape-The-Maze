@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class RetryTest : MonoBehaviour
 {
+
     public void Retry()
     {
         Time.timeScale = 1f;

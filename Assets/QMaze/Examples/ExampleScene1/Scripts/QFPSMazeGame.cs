@@ -21,10 +21,14 @@ namespace qtools.qmaze.example1
 		private float timeRemaining;
 		private bool timerStarted = false;
 		private QFPSController fpsController;
-
+		private bool isGameOver = false;
+		private GameObject finishTriggerInstance;
+		public GameObject skeletonPrefab;
+		public Transform playerTransform;
+		private GameObject skeletonInstance;
 		void OnGUI()
 		{
-			if (Input.GetMouseButtonDown(0))
+			if (!isGameOver && Input.GetMouseButtonDown(0))
 			{
 				Cursor.visible = false;
 				Cursor.lockState = CursorLockMode.Locked;
@@ -46,6 +50,7 @@ namespace qtools.qmaze.example1
 			}
 
 			UpdateTimer();
+
 		}
 
 		void finishHandler()
@@ -68,10 +73,12 @@ namespace qtools.qmaze.example1
 			for (int i = 0; i < finishPointList.Count; i++)
 			{
 				QVector2IntDir finishPosition = finishPointList[i];
-				GameObject finishTriggerInstance = (GameObject)GameObject.Instantiate(finishTriggerPrefab);
+				finishTriggerInstance = Instantiate(finishTriggerPrefab);
 				finishTriggerInstance.transform.parent = mazeEngine.transform;
 				finishTriggerInstance.transform.localPosition = new Vector3(finishPosition.x * mazeEngine.getMazePieceWidth(), 0.01f, - finishPosition.y * mazeEngine.getMazePieceHeight());
+				finishTriggerInstance.SetActive(false); // Hide until chest is unlocked
 			}
+
 
 			QFinishTrigger[] finishTriggerArray = FindObjectsByType<QFinishTrigger>(FindObjectsSortMode.None);
 			if (finishTriggerArray != null)
@@ -95,7 +102,23 @@ namespace qtools.qmaze.example1
 					fpsController.setRotation(Quaternion.AngleAxis((int)startPoint.direction * 90, Vector3.up));
 				}
 			}
-			
+
+			// --- SKELETON SPAWN ---
+			if (skeletonInstance != null)
+				Destroy(skeletonInstance); // Destroy old one if respawning for next level
+
+			Vector3 skeletonSpawnPosition = GetRandomMazePosition();
+			skeletonInstance = Instantiate(skeletonPrefab, skeletonSpawnPosition, Quaternion.identity);
+
+			// Pass the player reference to the SkeletonAI script
+			SkeletonAI skeletonAI = skeletonInstance.GetComponent<SkeletonAI>();
+			if (skeletonAI != null)
+			{
+				skeletonAI.player = playerTransform;
+				skeletonAI.fpsController = fpsController;
+			}
+
+
             currentLevel++;
             levelText.text = "LEVEL: " + currentLevel;
 
@@ -121,11 +144,14 @@ namespace qtools.qmaze.example1
 					timerStarted = false;
 
 					// Show Game Over UI
-					if (gameOverPanel != null)
-					{
-						gameOverPanel.SetActive(true);
-						timerText.text = "";
-					}
+					// In UpdateTimer()
+				if (gameOverPanel != null)
+				{
+					gameOverPanel.SetActive(true);
+					timerText.text = "";
+					isGameOver = true; // <-- Add this
+				}
+
 
 					// Disable player movement
 					if (fpsController != null)
@@ -145,6 +171,20 @@ namespace qtools.qmaze.example1
 			int seconds = Mathf.FloorToInt(timeToDisplay % 60);
 			timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
 		}
+
+		private Vector3 GetRandomMazePosition()
+		{
+			int mazeWidth = mazeEngine.getMazeWidth();
+			int mazeHeight = mazeEngine.getMazeHeight();
+			float pieceWidth = mazeEngine.getMazePieceWidth();
+			float pieceHeight = mazeEngine.getMazePieceHeight();
+
+			int randX = Random.Range(0, mazeWidth);
+			int randY = Random.Range(0, mazeHeight);
+
+			return new Vector3(randX * pieceWidth, 0.9f, -randY * pieceHeight);
+		}
+
 
 		public void RetryLevel()
 		{

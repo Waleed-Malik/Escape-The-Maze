@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &3114976070602513966
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3113302112936162652, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113302112936162652, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113302112936162652, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113302112936162652, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113302112936162652, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113302112936162652, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113302112936162652, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113302112936162652, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113302112936162652, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113302112936162652, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3114542309277114706, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_Name
+      value: treasure_chest_closed
+      objectReference: {fileID: 0}
+    - target: {fileID: 3114542309277114706, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_TagString
+      value: Chest
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
