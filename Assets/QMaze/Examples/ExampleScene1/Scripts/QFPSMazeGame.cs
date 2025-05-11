@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using qtools.qmaze;
+using UnityEngine.SceneManagement;
 
 namespace qtools.qmaze.example1
 {
@@ -13,6 +14,13 @@ namespace qtools.qmaze.example1
         public Text levelText;
 		private bool needGenerateNewMaze = true;
         private int currentLevel = 0;
+
+		public Text timerText;
+		public GameObject gameOverPanel;
+		public float timeLimit = 120f;
+		private float timeRemaining;
+		private bool timerStarted = false;
+		private QFPSController fpsController;
 
 		void OnGUI()
 		{
@@ -36,6 +44,8 @@ namespace qtools.qmaze.example1
 				needGenerateNewMaze = false;
 				generateNewMaze();
 			}
+
+			UpdateTimer();
 		}
 
 		void finishHandler()
@@ -45,6 +55,12 @@ namespace qtools.qmaze.example1
 
 		void generateNewMaze()
 		{
+			timeRemaining = timeLimit;
+			timerStarted = false;
+
+			this.fpsController = FindFirstObjectByType<QFPSController>();
+
+
 			mazeEngine.destroyImmediateMazeGeometry();
 			mazeEngine.generateMaze();
 
@@ -57,7 +73,7 @@ namespace qtools.qmaze.example1
 				finishTriggerInstance.transform.localPosition = new Vector3(finishPosition.x * mazeEngine.getMazePieceWidth(), 0.01f, - finishPosition.y * mazeEngine.getMazePieceHeight());
 			}
 
-			QFinishTrigger[] finishTriggerArray = FindObjectsOfType<QFinishTrigger>();
+			QFinishTrigger[] finishTriggerArray = FindObjectsByType<QFinishTrigger>(FindObjectsSortMode.None);
 			if (finishTriggerArray != null)
 			{
 				for (int i = 0; i < finishTriggerArray.Length; i++)
@@ -66,7 +82,8 @@ namespace qtools.qmaze.example1
 
 			List<QVector2IntDir> startPointList = mazeEngine.getStartPositionList();
 
-			QFPSController fpsController = FindObjectOfType<QFPSController>();
+			QFPSController fpsController = fpsController = FindFirstObjectByType<QFPSController>();
+
 			if (fpsController != null)
 			{
 				if (startPointList.Count == 0)
@@ -81,7 +98,63 @@ namespace qtools.qmaze.example1
 			
             currentLevel++;
             levelText.text = "LEVEL: " + currentLevel;
+
 		}
+
+		void UpdateTimer()
+		{
+			if (!timerStarted && fpsController != null && fpsController.isMoving())
+			{
+				timerStarted = true;
+			}
+
+			if (timerStarted)
+			{
+				if (timeRemaining > 0)
+				{
+					timeRemaining -= Time.deltaTime;
+					UpdateTimerDisplay(timeRemaining);
+				}
+				else
+				{
+					timeRemaining = 0;
+					timerStarted = false;
+
+					// Show Game Over UI
+					if (gameOverPanel != null)
+					{
+						gameOverPanel.SetActive(true);
+						timerText.text = "";
+					}
+
+					// Disable player movement
+					if (fpsController != null)
+						fpsController.enabled = false;
+
+					// Unlock cursor
+					Cursor.lockState = CursorLockMode.None;
+					Cursor.visible = true;
+				}
+			}
+		}
+
+
+		void UpdateTimerDisplay(float timeToDisplay)
+		{
+			int minutes = Mathf.FloorToInt(timeToDisplay / 60);
+			int seconds = Mathf.FloorToInt(timeToDisplay % 60);
+			timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+		}
+
+		public void RetryLevel()
+		{
+			Debug.Log("RetryLevel button clicked");
+    		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		}
+
+
+
+
 	} 
 }
 

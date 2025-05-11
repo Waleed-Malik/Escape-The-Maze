@@ -53,5 +53,11 @@ namespace qtools.qmaze.example1
 			rotationTargetVertical = Quaternion.identity;
 			cameraTransform.rotation = rotationTargetVertical;
 		}
+
+		public bool isMoving()
+		{
+			return Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0;
+		}
+
 	}
 }
