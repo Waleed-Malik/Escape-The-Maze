@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 namespace qtools.qmaze.example1
 {
 	public class QFPSController : MonoBehaviour
-	{		
+	{
 		public float mouseSensitivityX = 1.0f;
 		public float mouseSensitivityY = 1.0f;
 		public float moveScaleX = 1.0f;
@@ -20,11 +20,14 @@ namespace qtools.qmaze.example1
 		private Transform cameraTransform;
 
 		public bool hasKey = false;
-        public Text keyStatusText;
-        public GameObject unlockButtonUI;
-        public Transform chestTransform;
-        public float chestProximityDistance = 3f;
-        private bool isChestUnlocked = false;
+		public Text keyStatusText;
+		public GameObject unlockButtonUI;
+		public Transform chestTransform;
+		public float chestProximityDistance = 3f;
+		private bool isChestUnlocked = false;
+		public GameObject chestClosed;
+		public GameObject chestOpen;
+		public GameObject finishLine;
 		public int playerLives = 3;
 		public Image life1;
 		public Image life2;
@@ -32,33 +35,42 @@ namespace qtools.qmaze.example1
 
 		public SkeletonAI skeletonAI; // Drag the skeleton AI script here
 
+		// Added skeleton-related variables
+		public float invulnerabilityDuration = 2f;
+		private bool isInvulnerable = false;
+
 
 		// private bool isDragging = false;
 		// private Vector3 lastMousePosition;
 
-		void Start () 
+		void Start()
 		{
 			rotationTargetHorizontal = transform.rotation;
 			rigidBody = GetComponent<Rigidbody>();
 			cameraTransform = transform.GetChild(0);
 			rotationTargetVertical = cameraTransform.rotation;
+
+			if (chestClosed != null) chestClosed.SetActive(true);
+			if (chestOpen != null) chestOpen.SetActive(false);
+			if (finishLine != null) finishLine.SetActive(false);
 		}
 
-		void Update () 
+		void Update()
 		{
-			if(chestTransform == null){
-			chestTransform = GameObject.Find("treasure_chest_closed")?.GetComponent<Transform>();
+			if (chestTransform == null)
+			{
+				chestTransform = GameObject.Find("treasure_chest_closed")?.GetComponent<Transform>();
 
 			}
 
-			Vector3 velocity = transform.right   * Input.GetAxis("Horizontal") * moveScaleX;
-					velocity+= transform.forward * Input.GetAxis("Vertical")   * moveScaleY;
+			Vector3 velocity = transform.right * Input.GetAxis("Horizontal") * moveScaleX;
+			velocity += transform.forward * Input.GetAxis("Vertical") * moveScaleY;
 			velocity = Vector3.ClampMagnitude(velocity, moveMaxSpeed);
 			velocity *= moveLerp;
 			velocity.y = rigidBody.linearVelocity.y;
 			rigidBody.linearVelocity = velocity;
 
-			rotationTargetHorizontal *= Quaternion.Euler (0, Input.GetAxis("Mouse X") * mouseSensitivityX, 0f);
+			rotationTargetHorizontal *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * mouseSensitivityX, 0f);
 			transform.rotation = rotationTargetHorizontal;
 
 			Quaternion nextRotationTargetVertical = rotationTargetVertical * Quaternion.Euler(Input.GetAxis("Mouse Y") * mouseSensitivityY, 0, 0);
@@ -67,6 +79,9 @@ namespace qtools.qmaze.example1
 				rotationTargetVertical = nextRotationTargetVertical;
 				cameraTransform.localRotation = rotationTargetVertical;
 			}
+
+			if (Input.GetMouseButtonDown(0)) Debug.Log("Mouse Clicked");
+
 
 			// if (Input.GetMouseButtonDown(0))
 			// {
@@ -96,55 +111,74 @@ namespace qtools.qmaze.example1
 			// }
 
 			if (hasKey && chestTransform != null)
-            {
-				Debug.Log("Checking Proximity");
-                CheckChestProximity();
-            }
+			{
+				CheckChestProximity();
+			}
 
 			if (chestTransform == null)
 			{
-				Debug.Log("Woh Null Hai");
+				// Debug.Log("Woh Null Hai");
 			}
 		}
 
 		// Key pickup logic
-        void OnTriggerEnter(Collider other)
-        {
-            if (other.CompareTag("Key"))
-            {
-                hasKey = true;
-                keyStatusText.text = "Key: Obtained";
-                Destroy(other.gameObject);
-            }
-        }
+		void OnTriggerEnter(Collider other)
+		{
+			if (other.CompareTag("Key"))
+			{
+				hasKey = true;
+				keyStatusText.text = "Key: Obtained";
+				Destroy(other.gameObject);
+			}
+		}
 
-		 // Chest unlocking logic
-        void CheckChestProximity()
-        {
-            if (chestTransform == null || isChestUnlocked) return;
+		// Chest unlocking logic
+		void CheckChestProximity()
+		{
+			if (chestTransform == null || isChestUnlocked) return;
 
-            float distance = Vector3.Distance(transform.position, chestTransform.position);
+			float distance = Vector3.Distance(transform.position, chestTransform.position);
 
-            if (distance <= chestProximityDistance)
-            {
-                unlockButtonUI.SetActive(true);
-            }
-            else
-            {
-                unlockButtonUI.SetActive(false);
-            }
-        }
+			if (distance <= chestProximityDistance)
+			{
+				unlockButtonUI.SetActive(true);
+			}
+			else
+			{
+				unlockButtonUI.SetActive(false);
+			}
+		}
 
-        public void OnUnlockButtonPressed()
-        {
-            if (hasKey && !isChestUnlocked)
-            {
-                isChestUnlocked = true;
-                unlockButtonUI.SetActive(false);
-                keyStatusText.text = "Key used: ✅";
-                Debug.Log("Chest unlocked!");
-            }
-        }
+		public void OnUnlockButtonPressed()
+		{
+			Debug.Log("Butoon Unlocked");
+			if (hasKey && !isChestUnlocked)
+			{
+				Debug.Log("Inside if");
+				isChestUnlocked = true;
+				unlockButtonUI.SetActive(false);
+				keyStatusText.text = "Key used: ✅";
+				Debug.Log("Chest unlocked!");
+
+				// Chest swap
+				if (chestClosed != null) chestClosed.SetActive(false);
+				if (chestOpen != null) chestOpen.SetActive(true);
+
+				// Reveal finish line
+				if (finishLine != null) finishLine.SetActive(true);
+			}
+		}
+
+		// public void OnUnlockButtonPressed()
+		// {
+		// 	if (hasKey && !isChestUnlocked)
+		// 	{
+		// 		isChestUnlocked = true;
+		// 		unlockButtonUI.SetActive(false);
+		// 		keyStatusText.text = "Key used: ✅";
+		// 		Debug.Log("Chest unlocked!");
+		// 	}
+		// }
 
 		public void setRotation(Quaternion rotation)
 		{
@@ -162,27 +196,85 @@ namespace qtools.qmaze.example1
 
 		public void LoseLifeAndResetSkeleton()
 		{
-			if (playerLives <= 0) return;
+			if (isInvulnerable || playerLives <= 0) return;
 
 			playerLives--;
+			UpdateLifeUI();
+			Debug.Log($"Life lost! Lives remaining: {playerLives}");
 
-			if (playerLives == 2)
+			if (playerLives <= 0)
 			{
-				life3.enabled = false;
-			}
-			else if (playerLives == 1)
-			{
-				life2.enabled = false;
-			}
-			else if (playerLives == 0)
-			{
-				life1.enabled = false;
 				Debug.Log("Game Over");
-				// Add game over logic here
-				return;
+				// Add game over logic here or call retry
+				RetryTest retryComponent = FindObjectOfType<RetryTest>();
+				if (retryComponent != null)
+				{
+					retryComponent.Retry();
+				}
 			}
+			else
+			{
+				// Start invulnerability period
+				StartCoroutine(InvulnerabilityPeriod());
 
-			skeletonAI.RepositionSkeleton();
+				// Reposition skeleton
+				if (skeletonAI != null)
+					skeletonAI.RepositionSkeleton();
+			}
+		}
+
+		// Added: Invulnerability coroutine
+		IEnumerator InvulnerabilityPeriod()
+		{
+			isInvulnerable = true;
+
+			// Optional: Add visual feedback for invulnerability
+			// You could flash the player or add a shield effect here
+
+			yield return new WaitForSeconds(invulnerabilityDuration);
+
+			isInvulnerable = false;
+		}
+
+		// Added: Dedicated method for updating life UI
+		void UpdateLifeUI()
+		{
+			if (life3 != null && playerLives <= 2)
+				life3.enabled = false;
+			if (life2 != null && playerLives <= 1)
+				life2.enabled = false;
+			if (life1 != null && playerLives <= 0)
+				life1.enabled = false;
+		}
+
+		public void TakeTrapDamage()
+		{
+			if (isInvulnerable || playerLives <= 0) return;
+
+			playerLives--;
+			Debug.Log("Player stepped on a trap! Lives remaining: " + playerLives);
+			UpdateLifeUI();
+
+			if (playerLives <= 0)
+			{
+				Debug.Log("Out of lives - Calling retry logic");
+
+				// Find and call the retry logic instead of game over
+				RetryTest retryComponent = FindObjectOfType<RetryTest>();
+				if (retryComponent != null)
+				{
+					retryComponent.Retry();
+				}
+				else
+				{
+					Debug.Log("No retry");
+				}
+			}
+			else
+			{
+				// Start invulnerability period for trap damage too
+				StartCoroutine(InvulnerabilityPeriod());
+			}
 		}
 
 

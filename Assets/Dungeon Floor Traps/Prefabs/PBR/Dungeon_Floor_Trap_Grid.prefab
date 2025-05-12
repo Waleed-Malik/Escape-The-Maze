@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 33746017018251178}
   - component: {fileID: 23487152774813442}
   - component: {fileID: 64275767958180340}
+  - component: {fileID: 4879420936098867387}
   m_Layer: 0
   m_Name: Dungeon_Floor_Trap_Grid
-  m_TagString: Untagged
+  m_TagString: Trap
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -102,10 +103,25 @@ MeshCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300002, guid: 23cfee973004e6043a4e11eab315fbae, type: 3}
+--- !u!114 &4879420936098867387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1411054063627100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0d76c1ae457f12458b925527e5f149d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageRadius: 1.5
+  checkInterval: 0.2
+  trapCooldown: 2
