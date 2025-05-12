@@ -47,6 +47,13 @@ namespace qtools.qmaze.example1
 
 		void Start()
 		{
+			// Set the player tag to make it easier to find
+			if (gameObject.tag != "Player")
+			{
+				gameObject.tag = "Player";
+				Debug.Log("Set player tag to 'Player'");
+			}
+
 			rotationTargetHorizontal = transform.rotation;
 			rigidBody = GetComponent<Rigidbody>();
 			cameraTransform = transform.GetChild(0);
@@ -171,12 +178,56 @@ namespace qtools.qmaze.example1
 		// Key pickup logic
 		void OnTriggerEnter(Collider other)
 		{
-			if (other.CompareTag("Key"))
+			if (other.CompareTag("Key") && !hasKey)
 			{
 				hasKey = true;
 				keyStatusText.text = "Key: Obtained";
+				
+				// Destroy the collected key
 				Destroy(other.gameObject);
+				
+				// Find and disable all other keys in the scene
+				DisableAllRemainingKeys();
+				
+				Debug.Log("Key obtained! All other keys have been disabled.");
 			}
+		}
+
+		// New method to disable all remaining keys
+		private void DisableAllRemainingKeys()
+		{
+			// Find all objects with the "Key" tag
+			GameObject[] remainingKeys = GameObject.FindGameObjectsWithTag("Key");
+			
+			foreach (GameObject keyObj in remainingKeys)
+			{
+				// Disable or destroy the remaining keys
+				Destroy(keyObj);
+			}
+		}
+
+		// Add a public method to reset key status when level completes
+		public void ResetKeyStatus()
+		{
+			hasKey = false;
+			isChestUnlocked = false;
+			
+			if (keyStatusText != null)
+			{
+				keyStatusText.text = "Key: Not Found";
+			}
+			
+			if (unlockButtonUI != null)
+			{
+				unlockButtonUI.SetActive(false);
+			}
+			
+			// Reset chest objects
+			if (chestClosed != null) chestClosed.SetActive(true);
+			if (chestOpen != null) chestOpen.SetActive(false);
+			if (finishLine != null) finishLine.SetActive(false);
+			
+			Debug.Log("Key status reset for new level");
 		}
 
 		// Chest unlocking logic
@@ -255,10 +306,18 @@ namespace qtools.qmaze.example1
 			UpdateLifeUI();
 			Debug.Log($"Life lost! Lives remaining: {playerLives}");
 
+			// Play damage sound or effect here if you have one
+			
 			if (playerLives <= 0)
 			{
 				Debug.Log("Game Over");
-				// Add game over logic here or call retry
+				// Show Game Over screen
+				if (gameOverScreen != null)
+				{
+					gameOverScreen.SetActive(true);
+				}
+				
+				// Try to call retry
 				RetryTest retryComponent = FindFirstObjectByType<RetryTest>();
 				if (retryComponent != null)
 				{
@@ -270,9 +329,8 @@ namespace qtools.qmaze.example1
 				// Start invulnerability period
 				StartCoroutine(InvulnerabilityPeriod());
 
-				// Reposition skeleton
-				if (skeletonAI != null)
-					skeletonAI.RepositionSkeleton();
+				// Note: We don't call RepositionSkeleton here anymore
+				// The SkeletonAI will reposition itself after a brief delay
 			}
 		}
 

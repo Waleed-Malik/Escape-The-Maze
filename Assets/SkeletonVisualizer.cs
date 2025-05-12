@@ -11,6 +11,7 @@ public class SkeletonVisualizer : MonoBehaviour
     public Color chasingLineColor = Color.green;
     public bool showRanges = true;
     public bool showChasingLine = true;
+    public bool showMazeParent = true;
 
     void Start()
     {
@@ -34,6 +35,13 @@ public class SkeletonVisualizer : MonoBehaviour
         // Draw catch range
         Gizmos.color = catchRangeColor;
         Gizmos.DrawWireSphere(transform.position, skeletonAI.catchDistance);
+        
+        // Draw connection to maze parent if available
+        if (showMazeParent && skeletonAI.mazeParent != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, skeletonAI.mazeParent.transform.position);
+        }
     }
 
     void OnDrawGizmosSelected()
@@ -43,10 +51,17 @@ public class SkeletonVisualizer : MonoBehaviour
         if (!showChasingLine) return;
 
         float distance = Vector3.Distance(transform.position, skeletonAI.player.position);
+        
+        // Show line to player with color based on distance
+        Gizmos.color = (distance <= skeletonAI.chaseDistance) ? chasingLineColor : Color.gray;
+        Gizmos.DrawLine(transform.position, skeletonAI.player.position);
+        
+        // Draw arrow pointing to player if being chased
         if (distance <= skeletonAI.chaseDistance)
         {
-            Gizmos.color = chasingLineColor;
-            Gizmos.DrawLine(transform.position, skeletonAI.player.position);
+            Vector3 direction = (skeletonAI.player.position - transform.position).normalized;
+            Vector3 arrowPos = transform.position + direction * 2f;
+            Gizmos.DrawSphere(arrowPos, 0.2f);
         }
     }
 }

@@ -28,6 +28,9 @@ namespace qtools.qmaze.example1
 		private GameObject skeletonInstance;
 		private bool levelFinished = false;
 
+		// Flag to track if skeleton is spawned
+		private bool isSkeletonSpawned = false;
+
 		// void OnGUI()
 		// {
 		// 	if (!isGameOver && Input.GetMouseButtonDown(0))
@@ -64,19 +67,32 @@ namespace qtools.qmaze.example1
 		{
 			if (levelFinished) return; // prevent multiple calls
 			levelFinished = true;
-			fpsController.isChestUnlocked = false;
+			
+			// Reset key status from the FPS controller instead of just the unlock status
+			if (fpsController != null)
+			{
+				fpsController.ResetKeyStatus();
+			}
+			
 			needGenerateNewMaze = true;
+			Debug.Log("Level completed! Key status reset. Generating new level.");
 		}
-
 
 		public void generateNewMaze()
 		{
 			levelFinished = false; // allow next level trigger again
 			timeRemaining = timeLimit;
 			timerStarted = false;
+			isSkeletonSpawned = false; // Reset skeleton spawn flag for new level
 
-			this.fpsController = FindFirstObjectByType<QFPSController>();
+			// Find the FPS controller first 
+			fpsController = FindFirstObjectByType<QFPSController>();
 
+			// Make sure key status is reset at the beginning of a new level
+			if (fpsController != null)
+			{
+				fpsController.ResetKeyStatus();
+			}
 
 			mazeEngine.destroyImmediateMazeGeometry();
 			mazeEngine.generateMaze();
@@ -124,8 +140,7 @@ namespace qtools.qmaze.example1
 
 			List<QVector2IntDir> startPointList = mazeEngine.getStartPositionList();
 
-			QFPSController fpsController = fpsController = FindFirstObjectByType<QFPSController>();
-
+			// No need to reassign fpsController as it was already set above
 			if (fpsController != null)
 			{
 				if (startPointList.Count == 0)
@@ -144,21 +159,15 @@ namespace qtools.qmaze.example1
 			currentLevel++;
             levelText.text = "LEVEL: " + currentLevel;
 
-			// --- SKELETON SPAWN ---
+			// Don't spawn the skeleton yet - it will be spawned when chest is unlocked
 			if (skeletonInstance != null)
-				Destroy(skeletonInstance); // Destroy old one if respawning for next level
-
-			Vector3 skeletonSpawnPosition = GetRandomMazePosition();
-			skeletonInstance = Instantiate(skeletonPrefab, skeletonSpawnPosition, Quaternion.identity);
-
-			// Pass the player reference to the SkeletonAI script
-			SkeletonAI skeletonAI = skeletonInstance.GetComponent<SkeletonAI>();
-			if (skeletonAI != null)
 			{
-				skeletonAI.player = playerTransform;
-				skeletonAI.fpsController = fpsController;
+				Destroy(skeletonInstance);
+				skeletonInstance = null;
 			}
-
+			
+			// Spawn keys for this level
+			SpawnKeysForLevel();
 		}
 
 		void UpdateTimer()
@@ -221,8 +230,111 @@ namespace qtools.qmaze.example1
 			return new Vector3(randX * pieceWidth, 0.9f, -randY * pieceHeight);
 		}
 
+		// New method to spawn skeleton when chest is unlocked
+		public void SpawnSkeletonAfterChestUnlock()
+		{
+			if (isSkeletonSpawned) return; // Don't spawn if already spawned
+			if (skeletonPrefab == null)
+			{
+				Debug.LogError("Skeleton prefab is not assigned in QFPSMazeGame!");
+				return;
+			}
+
+			if (playerTransform == null)
+			{
+				// Try to find player if reference is missing
+				QFPSController controller = FindObjectOfType<QFPSController>();
+				if (controller != null)
+				{
+					playerTransform = controller.transform;
+					fpsController = controller;
+				}
+				else
+				{
+					Debug.LogError("No player transform assigned and could not find one in scene!");
+					return;
+				}
+			}
+
+			isSkeletonSpawned = true;
+			Debug.Log("Spawning skeleton after chest unlock");
+
+			// Spawn at a position away from the player
+			Vector3 skeletonSpawnPosition = GetRandomDistantMazePosition();
+			
+			// Force low y position to ensure skeleton is on the ground
+			skeletonSpawnPosition.y = 0.1f;
+			
+			// Instantiate the skeleton
+			if (skeletonInstance != null)
+			{
+				Destroy(skeletonInstance);
+			}
+			
+			skeletonInstance = Instantiate(skeletonPrefab, skeletonSpawnPosition, Quaternion.identity);
+			
+			// Set a name to make debugging easier
+			skeletonInstance.name = "Skeleton_Enemy";
+			
+			// Make sure GameObject is active
+			skeletonInstance.SetActive(true);
+
+			// Pass the player reference to the SkeletonAI script
+			SkeletonAI skeletonAI = skeletonInstance.GetComponent<SkeletonAI>();
+			if (skeletonAI != null)
+			{
+				// Ensure references are set
+				skeletonAI.player = playerTransform;
+				skeletonAI.fpsController = fpsController;
+				skeletonAI.mazeParent = mazeEngine.gameObject; // Use maze engine as parent
+				skeletonAI.chaseDistance = 15f; // Increase chase distance
+				skeletonAI.moveSpeed = 3f; // Increase speed slightly
+				
+				// Debug log 
+				Debug.Log($"Skeleton created at {skeletonSpawnPosition} with player={playerTransform.name}, controller={fpsController.name}");
+			}
+			else
+			{
+				Debug.LogError("SkeletonAI component not found on skeleton prefab!");
+			}
+		}
+
+		// New method to get a spawn position that's far from the player
+		private Vector3 GetRandomDistantMazePosition()
+		{
+			int mazeWidth = mazeEngine.getMazeWidth();
+			int mazeHeight = mazeEngine.getMazeHeight();
+			float pieceWidth = mazeEngine.getMazePieceWidth();
+			float pieceHeight = mazeEngine.getMazePieceHeight();
+
+			// Try to find a position that's distant from the player
+			Vector3 playerPos = playerTransform.position;
+			float minDistance = 10f; // Minimum distance from player
+			
+			for (int attempt = 0; attempt < 10; attempt++)
+			{
+				int randX = Random.Range(0, mazeWidth);
+				int randY = Random.Range(0, mazeHeight);
+				Vector3 potentialPos = new Vector3(randX * pieceWidth, 0.9f, -randY * pieceHeight);
+				
+				if (Vector3.Distance(potentialPos, playerPos) > minDistance)
+				{
+					return potentialPos;
+				}
+			}
+			
+			// If no suitable position found, return a default position
+			int defaultX = Random.Range(0, mazeWidth);
+			int defaultY = Random.Range(0, mazeHeight);
+			return new Vector3(defaultX * pieceWidth, 0.9f, -defaultY * pieceHeight);
+		}
+
 		public void ActivateFinishTriggers()
 		{
+			// First spawn the skeleton
+			SpawnSkeletonAfterChestUnlock();
+			
+			// Then activate finish triggers
 			foreach (GameObject trigger in finishTriggerInstances)
 			{
 				if (trigger != null)
@@ -234,6 +346,36 @@ namespace qtools.qmaze.example1
 		{
 			Debug.Log("RetryLevel button clicked");
     		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		}
+
+		// New method to spawn keys
+		private void SpawnKeysForLevel()
+		{
+			// Try to get the KeySpawner component
+			KeySpawner keySpawner = GetComponent<KeySpawner>();
+			
+			// If no KeySpawner found, try to add one
+			if (keySpawner == null)
+			{
+				keySpawner = gameObject.AddComponent<KeySpawner>();
+				Debug.Log("Added KeySpawner component to QFPSMazeGame");
+				
+				// Set default values - these should be configured in the editor
+				if (keySpawner.keyPrefab == null)
+				{
+					Debug.LogWarning("No key prefab assigned to KeySpawner. Keys won't spawn until a prefab is assigned.");
+				}
+			}
+			
+			// Spawn keys if we have a valid spawner and player reference
+			if (keySpawner != null && playerTransform != null)
+			{
+				keySpawner.SpawnKeys(playerTransform);
+			}
+			else
+			{
+				Debug.LogWarning("Cannot spawn keys: Missing KeySpawner or playerTransform reference");
+			}
 		}
 
 	} 
