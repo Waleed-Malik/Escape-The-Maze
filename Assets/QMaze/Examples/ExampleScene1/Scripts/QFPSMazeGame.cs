@@ -22,44 +22,50 @@ namespace qtools.qmaze.example1
 		private bool timerStarted = false;
 		private QFPSController fpsController;
 		private bool isGameOver = false;
-		private GameObject finishTriggerInstance;
+		private List<GameObject> finishTriggerInstances = new List<GameObject>();
 		public GameObject skeletonPrefab;
 		public Transform playerTransform;
 		private GameObject skeletonInstance;
-		void OnGUI()
-		{
-			if (!isGameOver && Input.GetMouseButtonDown(0))
-			{
-				Cursor.visible = false;
-				Cursor.lockState = CursorLockMode.Locked;
-			}
+		private bool levelFinished = false;
 
-			if (Input.GetKeyDown(KeyCode.Escape))
-			{
-				Cursor.lockState = CursorLockMode.None;
-				Cursor.visible = true;
-			}
-		}
+		// void OnGUI()
+		// {
+		// 	if (!isGameOver && Input.GetMouseButtonDown(0))
+		// 	{
+		// 		Cursor.visible = false;
+		// 		Cursor.lockState = CursorLockMode.Locked;
+		// 	}
+
+		// 	if (Input.GetKeyDown(KeyCode.Escape))
+		// 	{
+		// 		Cursor.lockState = CursorLockMode.None;
+		// 		Cursor.visible = true;
+		// 	}
+		// }
 
 		void Update()
 		{
 			if (needGenerateNewMaze)
 			{
+				Debug.Log("Generating new maze, moving to level " + (currentLevel + 1));
 				needGenerateNewMaze = false;
 				generateNewMaze();
 			}
 
 			UpdateTimer();
-
 		}
 
 		void finishHandler()
 		{
+			if (levelFinished) return; // prevent multiple calls
+			levelFinished = true;
 			needGenerateNewMaze = true;
 		}
 
+
 		void generateNewMaze()
 		{
+			levelFinished = false; // allow next level trigger again
 			timeRemaining = timeLimit;
 			timerStarted = false;
 
@@ -69,23 +75,46 @@ namespace qtools.qmaze.example1
 			mazeEngine.destroyImmediateMazeGeometry();
 			mazeEngine.generateMaze();
 
+			// finishTriggerInstances.Clear(); // Clear old ones
+
+			// List<QVector2IntDir> finishPointList = mazeEngine.getFinishPositionList();
+			// foreach (QVector2IntDir finishPosition in finishPointList)
+			// {
+			// 	GameObject trigger = Instantiate(finishTriggerPrefab);
+			// 	trigger.transform.parent = mazeEngine.transform;
+			// 	trigger.transform.localPosition = new Vector3(finishPosition.x * mazeEngine.getMazePieceWidth(), 0.01f, - finishPosition.y * mazeEngine.getMazePieceHeight());
+			// 	trigger.SetActive(false); // Hide initially
+			// 	finishTriggerInstances.Add(trigger);
+			// }
+
+
+			// QFinishTrigger[] finishTriggerArray = FindObjectsByType<QFinishTrigger>(FindObjectsSortMode.None);
+			// if (finishTriggerArray != null)
+			// {
+			// 	for (int i = 0; i < finishTriggerArray.Length; i++)
+			// 		finishTriggerArray[i].triggerHandlerEvent += finishHandler;
+			// }
+
+			// Instantiate finish triggers
+			finishTriggerInstances.Clear();
 			List<QVector2IntDir> finishPointList = mazeEngine.getFinishPositionList();
-			for (int i = 0; i < finishPointList.Count; i++)
+			foreach (QVector2IntDir finishPosition in finishPointList)
 			{
-				QVector2IntDir finishPosition = finishPointList[i];
-				finishTriggerInstance = Instantiate(finishTriggerPrefab);
-				finishTriggerInstance.transform.parent = mazeEngine.transform;
-				finishTriggerInstance.transform.localPosition = new Vector3(finishPosition.x * mazeEngine.getMazePieceWidth(), 0.01f, - finishPosition.y * mazeEngine.getMazePieceHeight());
-				finishTriggerInstance.SetActive(false); // Hide until chest is unlocked
+				GameObject trigger = Instantiate(finishTriggerPrefab);
+				trigger.transform.parent = mazeEngine.transform;
+				trigger.transform.localPosition = new Vector3(finishPosition.x * mazeEngine.getMazePieceWidth(), 0.01f, - finishPosition.y * mazeEngine.getMazePieceHeight());
+				trigger.SetActive(false); // Hide initially
+				finishTriggerInstances.Add(trigger);
 			}
 
-
+			// Hook the finishHandler AFTER instantiating the triggers
 			QFinishTrigger[] finishTriggerArray = FindObjectsByType<QFinishTrigger>(FindObjectsSortMode.None);
 			if (finishTriggerArray != null)
 			{
 				for (int i = 0; i < finishTriggerArray.Length; i++)
 					finishTriggerArray[i].triggerHandlerEvent += finishHandler;
 			}
+
 
 			List<QVector2IntDir> startPointList = mazeEngine.getStartPositionList();
 
@@ -103,6 +132,9 @@ namespace qtools.qmaze.example1
 				}
 			}
 
+			currentLevel++;
+            levelText.text = "LEVEL: " + currentLevel;
+
 			// --- SKELETON SPAWN ---
 			if (skeletonInstance != null)
 				Destroy(skeletonInstance); // Destroy old one if respawning for next level
@@ -117,10 +149,6 @@ namespace qtools.qmaze.example1
 				skeletonAI.player = playerTransform;
 				skeletonAI.fpsController = fpsController;
 			}
-
-
-            currentLevel++;
-            levelText.text = "LEVEL: " + currentLevel;
 
 		}
 
@@ -164,7 +192,6 @@ namespace qtools.qmaze.example1
 			}
 		}
 
-
 		void UpdateTimerDisplay(float timeToDisplay)
 		{
 			int minutes = Mathf.FloorToInt(timeToDisplay / 60);
@@ -185,15 +212,20 @@ namespace qtools.qmaze.example1
 			return new Vector3(randX * pieceWidth, 0.9f, -randY * pieceHeight);
 		}
 
+		public void ActivateFinishTriggers()
+		{
+			foreach (GameObject trigger in finishTriggerInstances)
+			{
+				if (trigger != null)
+					trigger.SetActive(true);
+			}
+		}
 
 		public void RetryLevel()
 		{
 			Debug.Log("RetryLevel button clicked");
     		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 		}
-
-
-
 
 	} 
 }

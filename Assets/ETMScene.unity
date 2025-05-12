@@ -1117,7 +1117,7 @@ MonoBehaviour:
   levelText: {fileID: 997738357}
   timerText: {fileID: 107546506}
   gameOverPanel: {fileID: 426295387}
-  timeLimit: 120
+  timeLimit: 1000
   skeletonPrefab: {fileID: 8858051749441068820, guid: 4c67ed6c086451b4db54ac4d24b626bb, type: 3}
   playerTransform: {fileID: 1667147308}
 --- !u!4 &728915093
@@ -1297,6 +1297,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1943607853}
     - target: {fileID: 11443594, guid: 37c3418b5f8552648bdb4aa1b53bfb6c, type: 3}
+      propertyPath: finishLine
+      value: 
+      objectReference: {fileID: 187426, guid: e6bacc2e03b7fe2409b6d9ea3fcd51cb, type: 3}
+    - target: {fileID: 11443594, guid: 37c3418b5f8552648bdb4aa1b53bfb6c, type: 3}
+      propertyPath: skeletonAI
+      value: 
+      objectReference: {fileID: 692891448}
+    - target: {fileID: 11443594, guid: 37c3418b5f8552648bdb4aa1b53bfb6c, type: 3}
+      propertyPath: chestClosed
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11443594, guid: 37c3418b5f8552648bdb4aa1b53bfb6c, type: 3}
       propertyPath: keyStatusText
       value: 
       objectReference: {fileID: 1425663605}
@@ -1304,6 +1316,10 @@ PrefabInstance:
       propertyPath: chestTransform
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 11443594, guid: 37c3418b5f8552648bdb4aa1b53bfb6c, type: 3}
+      propertyPath: gameOverScreen
+      value: 
+      objectReference: {fileID: 426295387}
     - target: {fileID: 11443594, guid: 37c3418b5f8552648bdb4aa1b53bfb6c, type: 3}
       propertyPath: unlockButtonUI
       value: 
@@ -1845,8 +1861,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 175, y: -52}
-  m_SizeDelta: {x: 350, y: 100}
+  m_AnchoredPosition: {x: 405, y: -52}
+  m_SizeDelta: {x: 790, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1425663605
 MonoBehaviour:
@@ -1875,7 +1891,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 3
     m_MaxSize: 51
-    m_Alignment: 4
+    m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 1

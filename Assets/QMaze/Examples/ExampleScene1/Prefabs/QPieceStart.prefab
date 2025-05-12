@@ -174,6 +174,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: treasure_chest_closed
       objectReference: {fileID: 0}
+    - target: {fileID: 3114542309277114706, guid: aaa0d279de2bf5046b5424f76b160304, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

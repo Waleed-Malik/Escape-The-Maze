@@ -39,6 +39,8 @@ namespace qtools.qmaze.example1
 		public float invulnerabilityDuration = 2f;
 		private bool isInvulnerable = false;
 
+		public GameObject gameOverScreen;
+
 
 		// private bool isDragging = false;
 		// private Vector3 lastMousePosition;
@@ -60,7 +62,6 @@ namespace qtools.qmaze.example1
 			if (chestTransform == null)
 			{
 				chestTransform = GameObject.Find("treasure_chest_closed")?.GetComponent<Transform>();
-
 			}
 
 			Vector3 velocity = transform.right * Input.GetAxis("Horizontal") * moveScaleX;
@@ -157,8 +158,14 @@ namespace qtools.qmaze.example1
 				Debug.Log("Inside if");
 				isChestUnlocked = true;
 				unlockButtonUI.SetActive(false);
-				keyStatusText.text = "Key used: ✅";
+				keyStatusText.text = "Chest unlocked! - Find The Finish Line";
 				Debug.Log("Chest unlocked!");
+
+				QFPSMazeGame mazeGame = FindFirstObjectByType<QFPSMazeGame>();
+				if (mazeGame != null)
+				{
+					mazeGame.ActivateFinishTriggers();
+				}
 
 				// Chest swap
 				if (chestClosed != null) chestClosed.SetActive(false);
@@ -206,7 +213,7 @@ namespace qtools.qmaze.example1
 			{
 				Debug.Log("Game Over");
 				// Add game over logic here or call retry
-				RetryTest retryComponent = FindObjectOfType<RetryTest>();
+				RetryTest retryComponent = FindFirstObjectByType<RetryTest>();
 				if (retryComponent != null)
 				{
 					retryComponent.Retry();
@@ -257,17 +264,16 @@ namespace qtools.qmaze.example1
 
 			if (playerLives <= 0)
 			{
-				Debug.Log("Out of lives - Calling retry logic");
+				Debug.Log("Out of lives - Showing Game Over screen");
 
-				// Find and call the retry logic instead of game over
-				RetryTest retryComponent = FindObjectOfType<RetryTest>();
-				if (retryComponent != null)
+				if (gameOverScreen != null)
 				{
-					retryComponent.Retry();
+					gameOverScreen.SetActive(true);
+					Time.timeScale = 0f; // Optional: Pause the game
 				}
 				else
 				{
-					Debug.Log("No retry");
+					Debug.LogWarning("Game Over screen not assigned!");
 				}
 			}
 			else

@@ -14,7 +14,7 @@ namespace qtools.qmaze.example1
 
         void Start()
         {
-            playerController = FindObjectOfType<QFPSController>();
+            playerController = FindFirstObjectByType<QFPSController>();
             if (playerController == null)
             {
                 Debug.LogError("ProximityTrapController: Player controller not found!");
