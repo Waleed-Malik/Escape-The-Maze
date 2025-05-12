@@ -43,6 +43,11 @@ namespace qtools.qmaze.example1
 		// 	}
 		// }
 
+		void Start()
+		{
+			fpsController = FindFirstObjectByType<QFPSController>().GetComponent<QFPSController>();
+		}
+
 		void Update()
 		{
 			if (needGenerateNewMaze)
@@ -55,15 +60,16 @@ namespace qtools.qmaze.example1
 			UpdateTimer();
 		}
 
-		void finishHandler()
+		public void finishHandler()
 		{
 			if (levelFinished) return; // prevent multiple calls
 			levelFinished = true;
+			fpsController.isChestUnlocked = false;
 			needGenerateNewMaze = true;
 		}
 
 
-		void generateNewMaze()
+		public void generateNewMaze()
 		{
 			levelFinished = false; // allow next level trigger again
 			timeRemaining = timeLimit;
@@ -130,6 +136,9 @@ namespace qtools.qmaze.example1
 					fpsController.gameObject.transform.position = new Vector3(startPoint.x * mazeEngine.getMazePieceWidth(), 0.9f, - startPoint.y * mazeEngine.getMazePieceHeight());
 					fpsController.setRotation(Quaternion.AngleAxis((int)startPoint.direction * 90, Vector3.up));
 				}
+				
+				// Call the new method to refresh chest references
+				fpsController.RefreshChestReference();
 			}
 
 			currentLevel++;

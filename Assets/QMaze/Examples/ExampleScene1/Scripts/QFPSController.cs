@@ -24,7 +24,7 @@ namespace qtools.qmaze.example1
 		public GameObject unlockButtonUI;
 		public Transform chestTransform;
 		public float chestProximityDistance = 3f;
-		private bool isChestUnlocked = false;
+		public bool isChestUnlocked = false;
 		public GameObject chestClosed;
 		public GameObject chestOpen;
 		public GameObject finishLine;
@@ -55,13 +55,59 @@ namespace qtools.qmaze.example1
 			if (chestClosed != null) chestClosed.SetActive(true);
 			if (chestOpen != null) chestOpen.SetActive(false);
 			if (finishLine != null) finishLine.SetActive(false);
+
+			StartCoroutine(FindChestAfterDelay());
 		}
+
+		// Add a public method to refresh the chest reference
+		public void RefreshChestReference()
+		{
+			hasKey = false; // Reset key status for the new level
+			isChestUnlocked = false;
+			
+			// Update UI
+			if (keyStatusText != null)
+				keyStatusText.text = "Key: Not Found";
+
+			// Start looking for the chest in the new level
+			StartCoroutine(FindChestAfterDelay());
+		}
+
+		IEnumerator FindChestAfterDelay()
+		{
+			yield return new WaitForSeconds(0.1f); // Wait a bit for scene objects to load
+			GameObject chestObj = GameObject.Find("treasure_chest_closed");
+			if (chestObj != null)
+			{
+				chestTransform = chestObj.transform;
+				Debug.Log("Chest found in scene: " + chestObj.name);
+			}
+			else
+			{
+				// Try alternative names or search by tag
+				GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
+				foreach (GameObject obj in allObjects)
+				{
+					if (obj.name.ToLower().Contains("chest") || obj.name.ToLower().Contains("treasure"))
+					{
+						chestTransform = obj.transform;
+						Debug.Log("Alternative chest found: " + obj.name);
+						break;
+					}
+				}
+				
+				if (chestTransform == null)
+					Debug.LogWarning("Chest object not found in this scene.");
+			}
+		}
+
 
 		void Update()
 		{
-			if (chestTransform == null)
+			// Try to find chest if it's still null but we have the key
+			if (hasKey && chestTransform == null)
 			{
-				chestTransform = GameObject.Find("treasure_chest_closed")?.GetComponent<Transform>();
+				StartCoroutine(FindChestAfterDelay());
 			}
 
 			Vector3 velocity = transform.right * Input.GetAxis("Horizontal") * moveScaleX;
@@ -161,7 +207,7 @@ namespace qtools.qmaze.example1
 				keyStatusText.text = "Chest unlocked! - Find The Finish Line";
 				Debug.Log("Chest unlocked!");
 
-				QFPSMazeGame mazeGame = FindFirstObjectByType<QFPSMazeGame>();
+				QFPSMazeGame mazeGame = FindAnyObjectByType<QFPSMazeGame>();
 				if (mazeGame != null)
 				{
 					mazeGame.ActivateFinishTriggers();
