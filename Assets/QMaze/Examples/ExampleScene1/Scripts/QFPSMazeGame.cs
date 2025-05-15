@@ -31,6 +31,10 @@ namespace qtools.qmaze.example1
 		// Flag to track if skeleton is spawned
 		private bool isSkeletonSpawned = false;
 
+		public GameObject mainMenuPanel;
+		public GameObject pausePanel;
+		private bool isPaused = false;
+
 		// void OnGUI()
 		// {
 		// 	if (!isGameOver && Input.GetMouseButtonDown(0))
@@ -49,6 +53,13 @@ namespace qtools.qmaze.example1
 		void Start()
 		{
 			fpsController = FindFirstObjectByType<QFPSController>().GetComponent<QFPSController>();
+			if (mainMenuPanel != null)
+				mainMenuPanel.SetActive(true);
+			if (pausePanel != null)
+				pausePanel.SetActive(false);
+			if (gameOverPanel != null)
+				gameOverPanel.SetActive(false);
+			Time.timeScale = 0f; // Pause at main menu
 		}
 
 		void Update()
@@ -58,6 +69,15 @@ namespace qtools.qmaze.example1
 				Debug.Log("Generating new maze, moving to level " + (currentLevel + 1));
 				needGenerateNewMaze = false;
 				generateNewMaze();
+			}
+
+			// Pause/Resume logic
+			if (!isGameOver && (mainMenuPanel == null || !mainMenuPanel.activeSelf) && Input.GetKeyDown(KeyCode.Escape))
+			{
+				if (!isPaused)
+					PauseGame();
+				else
+					ResumeGame();
 			}
 
 			UpdateTimer();
@@ -204,8 +224,8 @@ namespace qtools.qmaze.example1
 						fpsController.enabled = false;
 
 					// Unlock cursor
-					Cursor.lockState = CursorLockMode.None;
-					Cursor.visible = true;
+					// Cursor.lockState = CursorLockMode.None;
+					// Cursor.visible = true;
 				}
 			}
 		}
@@ -376,6 +396,54 @@ namespace qtools.qmaze.example1
 			{
 				Debug.LogWarning("Cannot spawn keys: Missing KeySpawner or playerTransform reference");
 			}
+		}
+
+		public void OnStartGame()
+		{
+			if (mainMenuPanel != null)
+				mainMenuPanel.SetActive(false);
+			Time.timeScale = 1f;
+			isPaused = false;
+			if (fpsController != null)
+				fpsController.enabled = true;
+			// Cursor.lockState = CursorLockMode.Locked;
+			// Cursor.visible = false;
+		}
+
+		public void OnQuitGame()
+		{
+			Application.Quit();
+		}
+
+		public void PauseGame()
+		{
+			if (pausePanel != null)
+				pausePanel.SetActive(true);
+			Time.timeScale = 0f;
+			isPaused = true;
+			if (fpsController != null)
+				fpsController.enabled = false;
+			// Cursor.lockState = CursorLockMode.None;
+			// Cursor.visible = true;
+		}
+
+		public void ResumeGame()
+		{
+			if (pausePanel != null)
+				pausePanel.SetActive(false);
+			Time.timeScale = 1f;
+			isPaused = false;
+			if (fpsController != null)
+				fpsController.enabled = true;
+			// Cursor.lockState = CursorLockMode.Locked;
+			// Cursor.visible = false;
+		}
+
+		public void RestartGame()
+		{
+			Time.timeScale = 1f;
+			isPaused = false;
+			SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		}
 
 	} 
